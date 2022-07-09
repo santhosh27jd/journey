@@ -31,6 +31,9 @@ class JourneyApplicationTests {
 		assertThat(journeyController).isNotNull();
 	}
 
+	/**
+	 * Passenger creation
+	 */
 	@Test
 	void createPassengerCheck() {
 		Passenger input = new Passenger();
@@ -44,6 +47,9 @@ class JourneyApplicationTests {
 		assertThat(passenger).isNotNull();
 	}
 
+	/**
+	 * Journey creation
+	 */
 	@Test
 	void createJourneyCheck() {
 		Journey input = new Journey();
@@ -57,6 +63,9 @@ class JourneyApplicationTests {
 		assertThat(journey).isNotNull();
 	}
 
+	/**
+	 * Journey update
+	 */
 	@Test
 	void updateJourney() {
 		Journey input = new Journey();
@@ -67,8 +76,18 @@ class JourneyApplicationTests {
 		input.setCreatedDateTime(Date.from(Instant.now()));
 		input.setCreatedBy("Address");
 		input.setDepartureTime(Timestamp.from(Instant.now()));
-		String id = journeyRepository.updateJourney(input.getId(),input);
+		String id = journeyRepository.updateJourney(input.getId(), input);
 		assertThat(id).isNotNull();
+	}
+
+	/**
+	 * Get Passenger by id
+	 */
+	@Test
+	void getPassenger() {
+		String id = "529c4da5-8e57-421d-a1e1-3f2a1ac2ed03";
+		Passenger ret = journeyRepository.loadPassengerById(id);
+		assertThat(ret).isNotNull();
 	}
 
 }
