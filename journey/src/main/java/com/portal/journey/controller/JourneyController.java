@@ -2,6 +2,7 @@ package com.portal.journey.controller;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Date;
 
 import org.json.simple.JSONObject;
@@ -10,7 +11,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -86,9 +91,15 @@ public class JourneyController {
 
 		// Request to External API
 		try {
-			JSONObject response = restTemplate.getForObject(ConstantUtil.EXTERNAL_API, JSONObject.class);
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+			httpHeaders.add("x-api-key", ""); // Need to get from Authorized person
+			HttpEntity<JSONObject> entity = new HttpEntity<JSONObject>(httpHeaders);
+			ResponseEntity<JSONObject> response = restTemplate.exchange(ConstantUtil.EXTERNAL_API + "?origin="
+					+ passengerReq.getOriginLocation() + "&destination=" + passengerReq.getDestinationLocation(),
+					HttpMethod.GET, entity, JSONObject.class);
 			minDuration = jsonReader.parseJsonAndFindMinDuraiton(response);
-			log.info("Minimum duration in minutes", minDuration);
+			log.info("Minimum duration in minutes is calculated", minDuration);
 		} catch (Exception ex) {
 			// API not connected, using Moc DATA
 			log.info("API is not connected");
