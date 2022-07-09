@@ -1,0 +1,123 @@
+[
+  {
+    "startTime": 1657270800000,
+    "endTime": 1657273800000,
+    "legs": [
+      {
+        "legStats": {
+          "startTime": 1657270800000,
+          "endTime": 1657272600000,
+          "travelMode": "CAR"
+          
+        },
+        "leg_ref": "cov-leam-car-1546624307000",
+        "from": {
+          "name": "Coventry"
+          
+        },
+        "to": {
+          "name": "Leamington Spa"
+          
+        }
+      },
+      {
+        "legStats": {
+          "startTime": 1657272900000,
+          "endTime": 1657273800000,
+          "travelMode": "RAIL"
+          
+        },
+        "leg_ref": "leam-oxf-rail-1546624307000",
+        "from": {
+          "name": "Leamington Spa"
+         
+        },
+        "to": {
+          "name": "Oxford"
+          
+        }
+      }
+      
+    ]
+  },
+  {
+    "startTime": 1657271400000,
+    "endTime": 1657273500000,
+    "legs": [
+      {
+        "legStats": {
+          "startTime": 1657271400000,
+          "endTime": 1657272000000,
+          "travelMode": "RAIL"
+          
+        },
+        "leg_ref": "cov-bham-rail-1546624307000",
+        "from": {
+          "name": "Coventry"
+          
+        },
+        "to": {
+          "name": "Birmingham new street"
+          
+        }
+      },
+      {
+        "legStats": {
+          "startTime": 1657272000000,
+          "endTime": 1657272600000,
+          "travelMode": "WALK"
+          
+        },
+        "leg_ref": "cov-leam-car-1546624307000",
+        "from": {
+          "name": "Birmingham new street"
+          
+        },
+        "to": {
+          "name": "Birmingham moor street"
+          
+        }
+      },
+      {
+        "legStats": {
+          "startTime": 1657272600000,
+          "endTime": 1657273500000,
+          "travelMode": "RAIL"
+          
+        },
+        "leg_ref": "bham-moor-oxf-rail-1546624307000",
+        "from": {
+          "name": "Birmingham moor street"
+          
+        },
+        "to": {
+          "name": "Oxford"
+        }
+      }
+      
+    ]
+  },
+  {
+    "startTime": 1657270800000,
+    "endTime": 1657274400000,
+    "legs": [
+      {
+        "legStats": {
+          "startTime": 1657270800000,
+          "endTime": 1657274400000,
+          "travelMode": "RAIL"
+          
+        },
+        "leg_ref": "cov-oxf-rail-1546624307000",
+        "from": {
+          "name": "Coventry"
+          
+        },
+        "to": {
+          "name": "Oxford"
+          
+        }
+      }
+    ]
+  }
+]
