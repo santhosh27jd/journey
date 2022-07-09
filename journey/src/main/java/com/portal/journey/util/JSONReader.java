@@ -88,11 +88,11 @@ public class JSONReader {
 				Duration dur = Duration.between(startIns, endIns);
 				duration = dur.toMinutes();
 				legDetails.put(duration, json.toJSONString());
-				minDur = Math.min(minDur, duration);
+				minDur = Math.min(minDur, duration); // Calculating minimum duration
 			}
 
 		}
-		// Best journey details
+		// Best journey details found
 		setBestJourneyDetails(legDetails.get(minDur));
 		return minDur;
 	}

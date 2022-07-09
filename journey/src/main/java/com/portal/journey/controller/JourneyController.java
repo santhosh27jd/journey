@@ -105,7 +105,7 @@ public class JourneyController {
 			log.info("API is not connected");
 			if (ex instanceof ResourceAccessException) {
 				Resource resource = new ClassPathResource(ConstantUtil.FILENAME);
-				minDuration = jsonReader.findMinDuration(resource.getFile().getPath());
+				minDuration = jsonReader.findMinDuration(resource.getFile().getPath()); //Calculating minimum duration
 				log.info("Minimum duration in minutes", minDuration);
 			}
 
