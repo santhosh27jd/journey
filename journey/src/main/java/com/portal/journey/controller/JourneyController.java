@@ -28,7 +28,6 @@ import org.springframework.web.client.RestTemplate;
 import com.portal.journey.entity.Journey;
 import com.portal.journey.entity.Passenger;
 import com.portal.journey.entity.PassengerRequest;
-import com.portal.journey.exception.JourneyCustomException;
 import com.portal.journey.exception.JourneyRunTimeException;
 import com.portal.journey.service.JourneyService;
 import com.portal.journey.util.ConstantUtil;
