@@ -17,5 +17,23 @@ public final class ConstantUtil {
 	 */
 	public final static String EXTERNAL_API="https://journeys.trippify.com/plan/journey";
 	
+	/**
+	 * USER
+	 */
 	public final static String USER = "Santhosh";
+	
+	/**
+	 * RAIL
+	 */
+	public final static String RAIL ="RAIL";
+	
+	/**
+	 * CAR
+	 */
+	public final static String CAR = "CAR";
+	
+	/**
+	 * WALK
+	 */
+	public final static String WALK = "WALK";
 }

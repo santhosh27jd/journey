@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.portal.journey.exception.JourneyCustomException;
 import com.portal.journey.exception.JourneyRunTimeException;
 
 /**
@@ -22,6 +23,18 @@ public class JourneyExceptionController {
 	 */
 	@ExceptionHandler(value = JourneyRunTimeException.class)
 	public ResponseEntity<Object> exception(JourneyRunTimeException exception) {
-		return new ResponseEntity<>("Insuffient parameter.. Please provide the required parameter", HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>("Insuffient parameter.. Please provide the required parameter",
+				HttpStatus.NOT_FOUND);
 	}
+
+	/**
+	 * 
+	 * @param exception
+	 * @return
+	 */
+	@ExceptionHandler(value = JourneyCustomException.class)
+	public ResponseEntity<Object> exception(JourneyCustomException exception) {
+		return new ResponseEntity<>(exception.getMessage(), HttpStatus.EXPECTATION_FAILED);
+	}
+
 }

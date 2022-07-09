@@ -17,6 +17,8 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.portal.journey.exception.JourneyCustomException;
+
 /**
  * 
  * @author santhoshkumardurairaj
@@ -59,21 +61,19 @@ public class JSONReader {
 		long minDur = Integer.MAX_VALUE;
 		Map<Long, String> legDetails = new HashMap<>();
 		// Read JSON file
-
 		JSONArray trippifyResponseArray = (JSONArray) obj;
 		for (Object object : trippifyResponseArray) {
 			JSONObject json = (JSONObject) object;
 			JSONArray legJson = (JSONArray) json.get("legs");
-			boolean carTravel = false;
+			boolean carTravel = true;
 			for (Object legObj : legJson) {
 				JSONObject legStat = (JSONObject) legObj;
 				JSONObject legStatObj = (JSONObject) legStat.get("legStats");
 				String travelMode = (String) legStatObj.get("travelMode");
 				log.info("TRAVEL MODE IS WALK OR RAIL ");
-				if (travelMode.equals("RAIL") || travelMode.equals("WALK")) {
-					System.out.println(legStatObj);
+				if (travelMode.equals(ConstantUtil.RAIL) || travelMode.equals(ConstantUtil.WALK)) {
+					carTravel = false;
 				} else {
-					carTravel = true;
 					break;
 				}
 			}
@@ -113,13 +113,13 @@ public class JSONReader {
 			minDur = parseJsonAndFindMinDuraiton(obj);
 		} catch (FileNotFoundException e) {
 			log.info("File not Found ");
-			e.printStackTrace();
+			throw new JourneyCustomException("FileNotFoundException");
 		} catch (IOException e) {
 			log.info("No Valid Parameters ");
-			e.printStackTrace();
+			throw new JourneyCustomException("IOException");
 		} catch (ParseException e) {
 			log.info("Unable to Parse ");
-			e.printStackTrace();
+			throw new JourneyCustomException("ParseException");
 		}
 		// Returning minimum duration in minutes
 		return minDur;
