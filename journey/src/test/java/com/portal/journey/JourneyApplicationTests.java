@@ -59,6 +59,7 @@ class JourneyApplicationTests {
 		input.setCreatedDateTime(Date.from(Instant.now()));
 		input.setCreatedBy("Address");
 		input.setDepartureTime(Timestamp.from(Instant.now()));
+		when(journeyRepository.saveJourney(any(Journey.class))).thenReturn(input);
 		Journey journey = journeyRepository.saveJourney(input);
 		assertThat(journey).isNotNull();
 	}
@@ -76,6 +77,7 @@ class JourneyApplicationTests {
 		input.setCreatedDateTime(Date.from(Instant.now()));
 		input.setCreatedBy("Address");
 		input.setDepartureTime(Timestamp.from(Instant.now()));
+		when(journeyRepository.updateJourney(any(String.class), any(Journey.class))).thenReturn(input.getId());
 		String id = journeyRepository.updateJourney(input.getId(), input);
 		assertThat(id).isNotNull();
 	}
@@ -86,6 +88,7 @@ class JourneyApplicationTests {
 	@Test
 	void getPassenger() {
 		String id = "529c4da5-8e57-421d-a1e1-3f2a1ac2ed03";
+		when(journeyRepository.loadPassengerById(any(String.class))).thenReturn(new Passenger());
 		Passenger ret = journeyRepository.loadPassengerById(id);
 		assertThat(ret).isNotNull();
 	}
