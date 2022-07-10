@@ -3,6 +3,8 @@ package com.portal.journey.entity;
 
 import java.util.Optional;
 
+import javax.validation.constraints.NotBlank;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -17,18 +19,21 @@ public class PassengerRequest {
 	/**
 	 * Input Param passenger_id
 	 */
+	@NotBlank
 	@JsonProperty("passenger_id")
 	private String passengerId;
 
 	/**
 	 * Input Param origin_location
 	 */
+	@NotBlank
 	@JsonProperty("origin_location")
 	private String originLocation;
 	
 	/**
 	 * Input Param destination_location
 	 */
+	@NotBlank
 	@JsonProperty("destination_location")
 	private String destinationLocation;
 	
