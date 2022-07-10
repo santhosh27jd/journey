@@ -1,5 +1,7 @@
 package com.portal.journey.service;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,5 +101,14 @@ public class JourneyService {
 	public String updateJourney(String id, Journey journey) {
 		log.info("updateJourney");
 		return journeyRepository.updateJourney(id, journey);
+	}
+	
+	/**
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public List<Passenger> loadPassengerByJourneyDate(String date){
+		return journeyRepository.findPassengerByJourneyDate(date);
 	}
 }

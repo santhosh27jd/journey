@@ -59,6 +59,12 @@ public class Journey {
 	private Long durationTime;
 	
 	/**
+	 * journey date
+	 */
+	@DynamoDBAttribute
+	private Date journeyDate;
+	
+	/**
 	 * createdDateTime
 	 */
 	@DynamoDBAttribute
@@ -262,6 +268,23 @@ public class Journey {
 	 */
 	public void setUpdatedDateTime(Date updatedDateTime) {
 		this.updatedDateTime = updatedDateTime;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	@DynamoDBTypeConvertedTimestamp(pattern="yyyy-MM-dd")
+	public Date getJourneyDate() {
+		return journeyDate;
+	}
+
+	/**
+	 * 
+	 * @param journeyDate
+	 */
+	public void setJourneyDate(Date journeyDate) {
+		this.journeyDate = journeyDate;
 	}
 
 }

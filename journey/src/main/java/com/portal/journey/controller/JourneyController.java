@@ -1,9 +1,13 @@
 package com.portal.journey.controller;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -25,13 +29,16 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
+import com.portal.journey.entity.Subscribers;
 import com.portal.journey.entity.Journey;
 import com.portal.journey.entity.Passenger;
 import com.portal.journey.entity.PassengerRequest;
 import com.portal.journey.exception.JourneyRunTimeException;
 import com.portal.journey.service.JourneyService;
+import com.portal.journey.service.TwilloSMSService;
 import com.portal.journey.util.ConstantUtil;
 import com.portal.journey.util.JSONReader;
+import com.portal.journey.util.SNSData;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -67,6 +74,12 @@ public class JourneyController {
 	 */
 	@Autowired
 	private JourneyService journeyService;
+
+	/**
+	 * TwilloSMSService Injection
+	 */
+	@Autowired
+	private TwilloSMSService twilloSMSService;
 
 	/**
 	 * 
@@ -105,7 +118,7 @@ public class JourneyController {
 			log.info("API is not connected");
 			if (ex instanceof ResourceAccessException) {
 				Resource resource = new ClassPathResource(ConstantUtil.FILENAME);
-				minDuration = jsonReader.findMinDuration(resource.getFile().getPath()); //Calculating minimum duration
+				minDuration = jsonReader.findMinDuration(resource.getFile().getPath()); // Calculating minimum duration
 				log.info("Minimum duration in minutes", minDuration);
 			}
 
@@ -148,10 +161,13 @@ public class JourneyController {
 	 * 
 	 * @param journey
 	 * @return
+	 * @throws ParseException
 	 */
 	@PostMapping("/addJourney")
-	public ResponseEntity<Object> createJourney(@RequestBody Journey journey) {
+	public ResponseEntity<Object> createJourney(@RequestBody Journey journey) throws ParseException {
 		log.info("Creating Journey");
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		journey.setJourneyDate(simpleDateFormat.parse(simpleDateFormat.format(Date.from(Instant.now()))));
 		journey.setCreatedBy(ConstantUtil.USER);
 		Date createTime = Date.from(Instant.now());
 		journey.setCreatedDateTime(createTime);
@@ -174,6 +190,35 @@ public class JourneyController {
 		String updateId = journeyService.updateJourney(journey.getId(), journey);
 		log.info("Journey is updated successfully ");
 		return new ResponseEntity<>("Journey is updated successfully " + updateId, HttpStatus.OK);
+
+	}
+
+	/**
+	 * 
+	 * @param message
+	 * @return
+	 */
+
+	@PostMapping("/sns")
+	public ResponseEntity<Object> snsNotificationReceiver(@RequestBody SNSData snsData) {
+		log.info("SNS published message details ",snsData); // RSS Feed details from SNS
+		log.info("SNS Notification");
+		
+		// Time being testing the end point using current date
+		// Getting current journey date for the passenger to notify
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		String todayDate = simpleDateFormat.format(Date.from(Instant.now()));
+		
+		// Getting passengerlist based on journey date
+		List<Passenger> passengerList = journeyService.loadPassengerByJourneyDate(todayDate);
+		
+		//Sharing the delay RSS data information to the passenger
+		List<Subscribers> subscribers = passengerList.stream()
+				.map(passenger -> new Subscribers(snsData.getMessage(), passenger.getMobileNo()))
+				.collect(Collectors.toList());
+		//Sending SMS via TWILLIO to the passenger
+		subscribers.stream().forEach(rssFeed -> twilloSMSService.sendSMSNotification(rssFeed));
+		return new ResponseEntity<>("SNS is notified via SMS and processed successfully ", HttpStatus.OK);
 
 	}
 }

@@ -1,6 +1,9 @@
 package com.portal.journey.repository;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,6 +94,32 @@ public class JourneyRepository {
 				.withAttributeValueList(new AttributeValue().withS(passengerId)));
 		List<Journey> list = dynammoDBMapper.scan(Journey.class, scanExpression);
 		return list.stream().findAny().orElse(null);
+	}
+
+	/**
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public List<Passenger> findPassengerByJourneyDate(String date) {
+		log.info("Load Journey By Date");
+		// Getting details using journey date
+		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+		scanExpression.addFilterCondition("journeyDate", new Condition().withComparisonOperator(ComparisonOperator.EQ)
+				.withAttributeValueList(new AttributeValue().withS(date)));
+		List<Journey> list = dynammoDBMapper.scan(Journey.class, scanExpression);
+
+		// getting passenger id list from journey table
+		List<String> idList = list.stream().map(jour -> jour.getPassengerId()).collect(Collectors.toList());
+		List<AttributeValue> attList = idList.stream().map(el -> new AttributeValue().withS(el))
+				.collect(Collectors.toList());
+
+		// getting passenger list
+		DynamoDBScanExpression scanExpressionId = new DynamoDBScanExpression();
+		scanExpressionId.addFilterCondition("id",
+				new Condition().withComparisonOperator(ComparisonOperator.EQ).withAttributeValueList(attList));
+		List<Passenger> passengerList = dynammoDBMapper.scan(Passenger.class, scanExpressionId);
+		return passengerList;
 	}
 
 	/**
