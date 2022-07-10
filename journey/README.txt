@@ -1,5 +1,16 @@
 #Code Explanation
 
+Task 1:(API Development)
+------
+Microservice Name : journey
+
+EndPoint:
+----------
+
+Best Journey details:
+http://localhost:8080/plan/journey
+
+
 Package Details
 ----------------
  Controller:
@@ -24,7 +35,7 @@ application properties
  
 #Files Attached
 ----------------
- Journey-arch-diagram.png
+ journey-LLD.png
     - LLD architectural diagram
  Testcase-Documet.xlsx
     - Testcases and proof attached - journey API
@@ -43,4 +54,19 @@ application properties
  -----
  Code committed in GIT Repository
   --https://github.com/santhosh27jd/journey
+  
+  
+  
+Task 2: (System design) 
+------ 
+Microservice Name : journey
+ 
+EndPoint:
+--------
+SNS Notification:
+http://localhost:8080/plan/journey/sns 
+
+#Files Attached
+----------------
+System-design-SMS.png
  
