@@ -64,7 +64,10 @@ Microservice Name : journey
 EndPoint:
 --------
 SNS Notification:
-http://localhost:8080/plan/journey/sns 
+http://localhost:8080/plan/journey/sns
+
+Explanation:
+Twillio implemented for sending SMS
 
 #Files Attached
 ----------------

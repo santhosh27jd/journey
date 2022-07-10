@@ -34,7 +34,7 @@ public class JourneyExceptionController {
 	 */
 	@ExceptionHandler(value = JourneyCustomException.class)
 	public ResponseEntity<Object> exception(JourneyCustomException exception) {
-		return new ResponseEntity<>(exception.getMessage(), HttpStatus.EXPECTATION_FAILED);
+		return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
 }

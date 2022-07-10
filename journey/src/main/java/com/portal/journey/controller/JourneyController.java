@@ -2,7 +2,6 @@ package com.portal.journey.controller;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
@@ -33,6 +32,7 @@ import com.portal.journey.entity.Subscribers;
 import com.portal.journey.entity.Journey;
 import com.portal.journey.entity.Passenger;
 import com.portal.journey.entity.PassengerRequest;
+import com.portal.journey.exception.JourneyCustomException;
 import com.portal.journey.exception.JourneyRunTimeException;
 import com.portal.journey.service.JourneyService;
 import com.portal.journey.service.TwilloSMSService;
@@ -123,22 +123,24 @@ public class JourneyController {
 			}
 
 		}
+		try {
+			// GET Journey Details from the passenger id
+			Journey journeyDetail = journeyService.getJourneyByPassenger(passengerReq.getPassengerId().get());
+			if (journeyDetail != null) {
+				journeyDetail.setDurationTime(minDuration); // Minimum duration time in minutes
+				journeyDetail.setBestOptionRoute(jsonReader.getBestJourneyDetails()); // Leg details of the best route
+				// Save BEST Route data and time.
+				String journeyId = journeyService.updateJourney(journeyDetail.getId(), journeyDetail);
+				if (journeyId != null) {
+					log.info("Best option journey details is updated", journeyId);
+				}
 
-		// GET Journey Details from the passenger id
-		Journey journeyDetail = journeyService.getJourneyByPassenger(passengerReq.getPassengerId().get());
-		if (journeyDetail != null) {
-			journeyDetail.setDurationTime(minDuration); // Minimum duration time in minutes
-			journeyDetail.setBestOptionRoute(jsonReader.getBestJourneyDetails()); // Leg details of the best route
-			// Save BEST Route data and time.
-			String journeyId = journeyService.updateJourney(journeyDetail.getId(), journeyDetail);
-			if (journeyId != null) {
-				log.info("Best option journey details is updated", journeyId);
 			}
-
+			log.info("Journey request is planned successfully");
+			return new ResponseEntity<>("Journey request is planned successfully", HttpStatus.OK);
+		} catch (Exception ex) {
+			throw new JourneyCustomException("BAD REQUEST-- " + ex.getMessage());
 		}
-		log.info("Journey request is planned successfully");
-		return new ResponseEntity<>("Journey request is planned successfully", HttpStatus.OK);
-
 	}
 
 	/**
@@ -149,12 +151,16 @@ public class JourneyController {
 	@PostMapping("/add")
 	public ResponseEntity<Object> create(@RequestBody Passenger passenger) {
 		log.info("Adding Passenger");
-		passenger.setCreatedBy(ConstantUtil.USER);
-		Date createTime = Date.from(Instant.now());
-		passenger.setCreatedDateTime(createTime);
-		journeyService.createPassenger(passenger);
-		log.info("Passenger is created successfully");
-		return new ResponseEntity<>("Passenger is created successfully", HttpStatus.OK);
+		try {
+			passenger.setCreatedBy(ConstantUtil.USER);
+			Date createTime = Date.from(Instant.now());
+			passenger.setCreatedDateTime(createTime);
+			journeyService.createPassenger(passenger);
+			log.info("Passenger is created successfully");
+			return new ResponseEntity<>("Passenger is created successfully", HttpStatus.OK);
+		} catch (Exception ex) {
+			throw new JourneyCustomException("BAD REQUEST-- " + ex.getMessage());
+		}
 	}
 
 	/**
@@ -164,16 +170,20 @@ public class JourneyController {
 	 * @throws ParseException
 	 */
 	@PostMapping("/addJourney")
-	public ResponseEntity<Object> createJourney(@RequestBody Journey journey) throws ParseException {
+	public ResponseEntity<Object> createJourney(@RequestBody Journey journey) {
 		log.info("Creating Journey");
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		journey.setJourneyDate(simpleDateFormat.parse(simpleDateFormat.format(Date.from(Instant.now()))));
-		journey.setCreatedBy(ConstantUtil.USER);
-		Date createTime = Date.from(Instant.now());
-		journey.setCreatedDateTime(createTime);
-		journeyService.createJourney(journey);
-		log.info("Journey is created successfully");
-		return new ResponseEntity<>("Journey is created successfully", HttpStatus.OK);
+		try {
+			journey.setJourneyDate(Date.from(Instant.now()));
+			System.out.println(journey.getJourneyDate());
+			journey.setCreatedBy(ConstantUtil.USER);
+			Date createTime = Date.from(Instant.now());
+			journey.setCreatedDateTime(createTime);
+			journeyService.createJourney(journey);
+			log.info("Journey is created successfully");
+			return new ResponseEntity<>("Journey is created successfully", HttpStatus.OK);
+		} catch (Exception ex) {
+			throw new JourneyCustomException("BAD REQUEST-- " + ex.getMessage());
+		}
 	}
 
 	/**
@@ -184,12 +194,16 @@ public class JourneyController {
 	@PutMapping("/updateJourney")
 	public ResponseEntity<Object> updateJourney(@RequestBody Journey journey) {
 		log.info("updating Journey");
-		journey.setUpdatedBy(ConstantUtil.USER);
-		Date createTime = Date.from(Instant.now());
-		journey.setUpdatedDateTime(createTime);
-		String updateId = journeyService.updateJourney(journey.getId(), journey);
-		log.info("Journey is updated successfully ");
-		return new ResponseEntity<>("Journey is updated successfully " + updateId, HttpStatus.OK);
+		try {
+			journey.setUpdatedBy(ConstantUtil.USER);
+			Date createTime = Date.from(Instant.now());
+			journey.setUpdatedDateTime(createTime);
+			String updateId = journeyService.updateJourney(journey.getId(), journey);
+			log.info("Journey is updated successfully ");
+			return new ResponseEntity<>("Journey is updated successfully " + updateId, HttpStatus.OK);
+		} catch (Exception ex) {
+			throw new JourneyCustomException("BAD REQUEST-- " + ex.getMessage());
+		}
 
 	}
 
@@ -201,24 +215,23 @@ public class JourneyController {
 
 	@PostMapping("/sns")
 	public ResponseEntity<Object> snsNotificationReceiver(@RequestBody SNSData snsData) {
-		log.info("SNS published message details ",snsData); // RSS Feed details from SNS
+		log.info("SNS published message details ", snsData); // RSS Feed details from SNS
 		log.info("SNS Notification");
-		
-		// Time being testing the end point using current date
-		// Getting current journey date for the passenger to notify
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		String todayDate = simpleDateFormat.format(Date.from(Instant.now()));
-		
-		// Getting passengerlist based on journey date
-		List<Passenger> passengerList = journeyService.loadPassengerByJourneyDate(todayDate);
-		
-		//Sharing the delay RSS data information to the passenger
-		List<Subscribers> subscribers = passengerList.stream()
-				.map(passenger -> new Subscribers(snsData.getMessage(), passenger.getMobileNo()))
-				.collect(Collectors.toList());
-		//Sending SMS via TWILLIO to the passenger
-		subscribers.stream().forEach(rssFeed -> twilloSMSService.sendSMSNotification(rssFeed));
-		return new ResponseEntity<>("SNS is notified via SMS and processed successfully ", HttpStatus.OK);
+		try {
+			// Getting journey date for the passenger to notify from request
+			// Getting passengerlist based on journey date
+			List<Passenger> passengerList = journeyService.loadPassengerByJourneyDate(snsData.getJourneyDate());
+
+			// Sharing the delay RSS data information to the passenger
+			List<Subscribers> subscribers = passengerList.stream()
+					.map(passenger -> new Subscribers(snsData.getMessage(), passenger.getMobileNo()))
+					.collect(Collectors.toList());
+			// Sending SMS via TWILLIO to the passenger
+			subscribers.stream().forEach(rssFeed -> twilloSMSService.sendSMSNotification(rssFeed));
+			return new ResponseEntity<>("SNS is notified via SMS and processed successfully ", HttpStatus.OK);
+		} catch (Exception ex) {
+			throw new JourneyCustomException("BAD REQUEST-- " + ex.getMessage());
+		}
 
 	}
 }
