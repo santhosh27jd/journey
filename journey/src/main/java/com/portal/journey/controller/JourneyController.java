@@ -82,7 +82,7 @@ public class JourneyController {
 	private TwilloSMSService twilloSMSService;
 
 	/**
-	 * 
+	 * Endpoints to calculate best Journey between two locations
 	 * @param passengerId
 	 * @param originLocation
 	 * @param destinationLocation
@@ -111,7 +111,7 @@ public class JourneyController {
 			ResponseEntity<JSONObject> response = restTemplate.exchange(ConstantUtil.EXTERNAL_API + "?origin="
 					+ passengerReq.getOriginLocation() + "&destination=" + passengerReq.getDestinationLocation(),
 					HttpMethod.GET, entity, JSONObject.class);
-			minDuration = jsonReader.parseJsonAndFindMinDuraiton(response);
+			minDuration = jsonReader.parseJsonAndFindMinDuraiton(response); // Calculating minimum duration
 			log.info("Minimum duration in minutes is calculated", minDuration);
 		} catch (Exception ex) {
 			// API not connected, using Moc DATA
@@ -136,7 +136,7 @@ public class JourneyController {
 				}
 
 			}
-			log.info("Journey request is planned successfully");
+			log.info("Best Journey is planned successfully");
 			return new ResponseEntity<>("Journey request is planned successfully", HttpStatus.OK);
 		} catch (Exception ex) {
 			throw new JourneyCustomException("BAD REQUEST-- " + ex.getMessage());
@@ -144,7 +144,7 @@ public class JourneyController {
 	}
 
 	/**
-	 * 
+	 * Add passenger
 	 * @param passenger
 	 * @return
 	 */
@@ -164,7 +164,7 @@ public class JourneyController {
 	}
 
 	/**
-	 * 
+	 * Add Journey
 	 * @param journey
 	 * @return
 	 * @throws ParseException
@@ -187,7 +187,7 @@ public class JourneyController {
 	}
 
 	/**
-	 * 
+	 * Update Journey
 	 * @param journey
 	 * @return
 	 */
@@ -208,7 +208,7 @@ public class JourneyController {
 	}
 
 	/**
-	 * 
+	 * SMS notification to passenger
 	 * @param message
 	 * @return
 	 */
@@ -228,7 +228,7 @@ public class JourneyController {
 					.collect(Collectors.toList());
 			// Sending SMS via TWILLIO to the passenger
 			subscribers.stream().forEach(rssFeed -> twilloSMSService.sendSMSNotification(rssFeed));
-			return new ResponseEntity<>("SNS is notified via SMS and processed successfully ", HttpStatus.OK);
+			return new ResponseEntity<>("SMS is sent and infromation shared successfully ", HttpStatus.OK);
 		} catch (Exception ex) {
 			throw new JourneyCustomException("BAD REQUEST-- " + ex.getMessage());
 		}
