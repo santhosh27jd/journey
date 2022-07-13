@@ -174,7 +174,6 @@ public class JourneyController {
 		log.info("Creating Journey");
 		try {
 			journey.setJourneyDate(Date.from(Instant.now()));
-			System.out.println(journey.getJourneyDate());
 			journey.setCreatedBy(ConstantUtil.USER);
 			Date createTime = Date.from(Instant.now());
 			journey.setCreatedDateTime(createTime);
